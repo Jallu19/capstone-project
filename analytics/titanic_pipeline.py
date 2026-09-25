@@ -64,8 +64,8 @@ def clean_dataset(df: pd.DataFrame) -> pd.DataFrame:
                 else:
                     df[column] = df[column].fillna(df[column].mode()[0])
             else:
-                if column in ["deck"]:
-                    df[column] = df[column].fillna("missing")
+                if column == "deck":
+                    df[column] = df[column].astype(object).fillna("missing")
                 else:
                     df = df.drop(columns=[column])
     return df

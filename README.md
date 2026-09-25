@@ -43,6 +43,13 @@ Then send a request to the API:
 curl -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json" -d '{"query":"What is Zepto's delivery policy?"}'
 ```
 
+Example mock responses:
+
+```json
+{"answer":"Based on the retrieved context: Zepto delivers grocery and household essentials to serviceable pin codes within 10 to 30 minutes ...","sources":["doc_01"],"confidence":1.0}
+{"answer":"I can only answer questions about Zepto policies right now.","sources":[],"confidence":1.0}
+```
+
 ## Design summary
 
 ### Data pipeline

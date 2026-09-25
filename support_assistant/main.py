@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Annotated, TypedDict
+from typing import TypedDict
 
 import chromadb
 from fastapi import FastAPI
@@ -72,9 +72,9 @@ class SupportGraph:
         hits = self.collection.query(query_embeddings=embeddings.tolist(), n_results=3)
         docs = hits["documents"][0]
         ids = hits["ids"][0]
-        top_doc = docs[0]
+        top_doc = docs[0] if docs else "No relevant policy context found."
         snippet = top_doc[:200]
-        if MOCK_LLM in (None, "", "0"):
+        if str(MOCK_LLM).strip().lower() not in {"0", "false"}:
             state["final_answer"] = f"Based on the retrieved context: {snippet}"
             state["sources"] = ids
             state["confidence"] = 1.0
@@ -106,25 +106,19 @@ class SupportGraph:
         return graph.compile()
 
 
-@app = FastAPI(title="Zepto Support Assistant")
+app = FastAPI(title="Zepto Support Assistant")
+
 
 def create_response(answer: str, sources: list[str], confidence: float) -> AskResponse:
     return AskResponse(answer=answer, sources=sources, confidence=confidence)
 
 
-def create_app() -> FastAPI:
+@app.post("/ask", response_model=AskResponse)
+def ask(payload: AskRequest) -> AskResponse:
     graph = SupportGraph().build_graph()
-
-    @app.post("/ask", response_model=AskResponse)
-    def ask(payload: AskRequest) -> AskResponse:
-        state = {"query": payload.query, "intent": "", "results": [], "final_answer": "", "sources": [], "confidence": 0.0}
-        result = graph.invoke(state)
-        return create_response(result["final_answer"], result["sources"], float(result["confidence"]))
-
-    return app
-
-
-app = create_app()
+    state = {"query": payload.query, "intent": "", "results": [], "final_answer": "", "sources": [], "confidence": 0.0}
+    result = graph.invoke(state)
+    return create_response(result["final_answer"], result["sources"], float(result["confidence"]))
 
 
 if __name__ == "__main__":

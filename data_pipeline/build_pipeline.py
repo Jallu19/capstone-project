@@ -14,7 +14,6 @@ CATEGORIES = [
     ("Travel", "catalogue/category/books/travel_2/index.html"),
     ("Mystery", "catalogue/category/books/mystery_3/index.html"),
     ("Historical Fiction", "catalogue/category/books/historical-fiction_4/index.html"),
-    ("Science Fiction", "catalogue/category/books/science-fiction_1/index.html"),
 ]
 GBP_TO_INR_RATE = 105.50
 BASE_DIR = Path(__file__).resolve().parent
@@ -213,7 +212,7 @@ def write_sql_summary(results: dict[str, pd.DataFrame]) -> None:
     ]
     for name, frame in results.items():
         lines.append(f"## {name}")
-        lines.append(frame.head(10).to_markdown(index=False))
+        lines.append(frame.head(10).to_string(index=False))
         lines.append("")
     QUERY_OUTPUT_PATH.write_text("\n".join(lines), encoding="utf-8")
 
