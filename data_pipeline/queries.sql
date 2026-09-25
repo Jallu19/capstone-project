@@ -12,3 +12,4 @@ SELECT title, rating FROM books WHERE category_id IN (SELECT category_id FROM ca
 
 -- join_highest_rated
 SELECT c.category_name, b.title, b.rating, b.price_inr FROM books b JOIN categories c ON b.category_id = c.category_id ORDER BY b.rating DESC, c.category_name LIMIT 10;
+
